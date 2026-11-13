@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Grammar Quiz: Nouns & Quantifiers</title>
+    <!-- Подключение Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Подключение шрифта Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Плавная анимация появления */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.35s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-indigo-100 selection:text-indigo-700">
+
+    <!-- Верхняя панель навигации -->
+    <header class="bg-white border-b border-slate-200 py-4 px-4 sm:px-6 shadow-sm">
+        <div class="max-w-3xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-200">
+                    En
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-base sm:text-lg leading-tight">English Grammar Quiz</h1>
+                    <p class="text-xs text-slate-500">Countable & Uncountable Nouns</p>
+                </div>
+            </div>
+            <div id="header-score-badge" class="hidden bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg text-sm font-semibold border border-indigo-100">
+                Счёт: <span id="current-score">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контейнер приложения -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6">
+        <div class="w-full max-w-3xl">
+
+            <!-- 1. ЭКРАН ПРИВЕТСТВИЯ (СТАРТ) -->
+            <section id="start-screen" class="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-10 text-center animate-fade-in">
+                <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </div>
+                
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3">
+                    Проверь свои знания английского!
+                </h2>
+                <p class="text-slate-600 text-base sm:text-lg max-w-xl mx-auto mb-8">
+                    Тест состоит из <span class="font-semibold text-indigo-600">30 вопросов</span> на тему исчисляемых и неисчисляемых существительных, а также слов-квантификаторов (<span class="italic">some, any, much, many, a few, a little</span>).
+                </p>
+
+                <div class="max-w-md mx-auto mb-8 text-left">
+                    <label for="student-name" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Твоё имя и фамилия (необязательно):
+                    </label>
+                    <input type="text" id="student-name" placeholder="Например: Алексей Смирнов" 
+                        class="w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-base">
+                </div>
+
+                <button id="start-btn" class="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all text-lg cursor-pointer">
+                    Начать викторину →
+                </button>
+            </section>
+
+            <!-- 2. ЭКРАН ПРОХОЖДЕНИЯ ВИКТОРИНЫ -->
+            <section id="quiz-screen" class="hidden bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-10 animate-fade-in">
+                <!-- Индикатор прогресса -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center text-sm font-semibold text-slate-500 mb-2">
+                        <span id="question-counter" class="text-indigo-600">Вопрос 1 из 30</span>
+                        <span id="progress-percent">3%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="bg-indigo-600 h-full rounded-full transition-all duration-300 ease-out" style="width: 3.33%"></div>
+                    </div>
+                </div>
+
+                <!-- Текст вопроса -->
+                <div class="mb-8">
+                    <h3 id="question-text" class="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
+                        <!-- Сюда подставляется вопрос -->
+                    </h3>
+                </div>
+
+                <!-- Контейнер вариантов ответов -->
+                <div id="options-container" class="space-y-3 mb-8">
+                    <!-- Сюда генерируются кнопки вариантов -->
+                </div>
+
+                <!-- Блок мгновенной обратной связи и кнопка продолжения -->
+                <div id="feedback-area" class="hidden pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in">
+                    <div id="feedback-message" class="flex items-center space-x-2 font-semibold text-base">
+                        <!-- Сообщение: Правильно / Неправильно -->
+                    </div>
+                    <button id="next-btn" class="w-full sm:w-auto px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-semibold rounded-xl shadow-md shadow-indigo-200 transition-all cursor-pointer">
+                        Следующий вопрос →
+                    </button>
+                </div>
+            </section>
+
+            <!-- 3. ЭКРАН РЕЗУЛЬТАТОВ -->
+            <section id="result-screen" class="hidden bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-10 animate-fade-in">
+                <div class="text-center mb-8">
+                    <div id="result-icon" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl shadow-inner">
+                        🏆
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
+                        Викторина завершена!
+                    </h2>
+                    <p id="result-student-name" class="text-lg font-medium text-indigo-600 mb-4"></p>
+                    <p id="result-comment" class="text-slate-600 max-w-lg mx-auto"></p>
+                </div>
+
+                <!-- Карточки статистики -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 text-center">
+                        <div class="text-sm text-slate-500 font-medium mb-1">Правильных ответов</div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">
+                            <span id="final-score" class="text-emerald-600">0</span> <span class="text-lg text-slate-400">/ 30</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 text-center">
+                        <div class="text-sm text-slate-500 font-medium mb-1">Процент успеха</div>
+                        <div id="final-percentage" class="text-2xl sm:text-3xl font-extrabold text-indigo-600">0%</div>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 text-center">
+                        <div class="text-sm text-slate-500 font-medium mb-1">Оценка</div>
+                        <div id="final-grade" class="text-2xl sm:text-3xl font-extrabold text-slate-900">5</div>
+                    </div>
+                </div>
+
+                <!-- Кнопка перезапуска -->
+                <div class="text-center mb-8">
+                    <button id="restart-btn" class="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all text-base cursor-pointer">
+                        ↻ Пройти викторину заново
+                    </button>
+                </div>
+
+                <!-- Сводка ошибок (разбор) -->
+                <div id="mistakes-section" class="hidden border-t border-slate-200 pt-8">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                        Работа над ошибками (<span id="mistakes-count">0</span>)
+                    </h3>
+                    <div id="mistakes-list" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                        <!-- Сюда добавляются карточки с ошибками -->
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer class="text-center py-4 text-xs text-slate-400">
+        Интерактивный тренажёр по грамматике английского языка
+    </footer>
+
+    <!-- Логика приложения -->
+    <script>
+        // База данных всех 30 вопросов (строго по списку)
+        const quizData = [
+            {
+                question: "Which noun is uncountable?",
+                options: ["drawer", "information", "window", "biscuit"],
+                correct: 1
+            },
+            {
+                question: "Which noun is normally used only in the plural?",
+                options: ["desk", "apple", "scissors", "room"],
+                correct: 2
+            },
+            {
+                question: "The furniture in this room ___ very comfortable.",
+                options: ["is", "are", "have", "were"],
+                correct: 0
+            },
+            {
+                question: "The news ___ surprising.",
+                options: ["are", "have", "were", "is"],
+                correct: 3
+            },
+            {
+                question: "Could you give me ___ about choosing a university?",
+                options: ["an advice", "some advice", "a few advice", "many advices"],
+                correct: 1
+            },
+            {
+                question: "Which phrase is correct?",
+                options: ["an information", "three informations", "a piece of information", "many information"],
+                correct: 2
+            },
+            {
+                question: "I like these shelves. ___ are really useful.",
+                options: ["They", "It", "This", "That"],
+                correct: 0
+            },
+            {
+                question: "Which sentence is correct?",
+                options: ["She bought a furniture.", "She bought two furnitures.", "She bought many furniture.", "She bought some furniture."],
+                correct: 3
+            },
+            {
+                question: "There are ___ books on the desk.",
+                options: ["a little", "some", "much", "an"],
+                correct: 1
+            },
+            {
+                question: "We haven’t got ___ milk in the fridge.",
+                options: ["some", "many", "any", "a few"],
+                correct: 2
+            },
+            {
+                question: "Would you like ___ tea?",
+                options: ["some", "many", "a few", "an"],
+                correct: 0
+            },
+            {
+                question: "Have you got ___ questions?",
+                options: ["much", "a little", "an", "any"],
+                correct: 3
+            },
+            {
+                question: "You can choose ___ seat; they are all available.",
+                options: ["much", "any", "a little", "every of"],
+                correct: 1
+            },
+            {
+                question: "___ my students have part-time jobs.",
+                options: ["Some", "Any", "Some of", "Much of"],
+                correct: 2
+            },
+            {
+                question: "Which sentence means “There aren’t any drawers in my desk”?",
+                options: ["My desk has no drawers.", "My desk has any drawers.", "My desk has a few drawers.", "My desk has some drawers."],
+                correct: 0
+            },
+            {
+                question: "___ applicants had the necessary experience, so we could not hire anyone.",
+                options: ["Any", "A little", "Much", "No"],
+                correct: 3
+            },
+            {
+                question: "How ___ chairs do we need?",
+                options: ["much", "many", "little", "any"],
+                correct: 1
+            },
+            {
+                question: "How ___ sugar do you put in your tea?",
+                options: ["many", "few", "much", "a few"],
+                correct: 2
+            },
+            {
+                question: "There is ___ bread left—enough for two sandwiches.",
+                options: ["a little", "a few", "many", "a number of"],
+                correct: 0
+            },
+            {
+                question: "There are ___ apples left—enough for a small snack.",
+                options: ["a little", "much", "an amount of", "a few"],
+                correct: 3
+            },
+            {
+                question: "We have ___ time left—almost none—so we must hurry.",
+                options: ["a few", "little", "many", "few"],
+                correct: 1
+            },
+            {
+                question: "Unfortunately, ___ students understood the explanation; most needed extra help.",
+                options: ["a little", "much", "few", "little"],
+                correct: 2
+            },
+            {
+                question: "___ the rooms have a sea view.",
+                options: ["A few of", "A little of", "Much of", "A few"],
+                correct: 0
+            },
+            {
+                question: "A considerable ___ money was spent on the project.",
+                options: ["number of", "many of", "few of", "amount of"],
+                correct: 3
+            },
+            {
+                question: "A large ___ students attended the lecture.",
+                options: ["amount of", "number of", "much of", "little of"],
+                correct: 1
+            },
+            {
+                question: "Which expression can be used with both plural countable and uncountable nouns?",
+                options: ["many", "much", "plenty of", "a few"],
+                correct: 2
+            },
+            {
+                question: "There isn’t much ___ for another desk in this office.",
+                options: ["room", "rooms", "a room", "the rooms"],
+                correct: 0
+            },
+            {
+                question: "This house has three ___ upstairs.",
+                options: ["room", "much room", "a room", "rooms"],
+                correct: 3
+            },
+            {
+                question: "In “I’d like a coffee, please,” a coffee means:",
+                options: ["coffee in general", "a cup of coffee", "a type of furniture", "a large amount of coffee"],
+                correct: 1
+            },
+            {
+                question: "In which sentence does light function as an uncountable noun?",
+                options: ["There are two lights above the table.", "One of the lights is broken.", "This room gets plenty of natural light.", "Please turn off the lights."],
+                correct: 2
+            }
+        ];
+
+        // Буквенные обозначения вариантов
+        const optionLetters = ["A", "B", "C", "D"];
+
+        // Переменные состояния викторины
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let studentName = "";
+        let isAnswered = false;
+        let mistakes = [];
+
+        // Элементы DOM
+        const startScreen = document.getElementById("start-screen");
+        const quizScreen = document.getElementById("quiz-screen");
+        const resultScreen = document.getElementById("result-screen");
+
+        const studentNameInput = document.getElementById("student-name");
+        const startBtn = document.getElementById("start-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const restartBtn = document.getElementById("restart-btn");
+
+        const headerScoreBadge = document.getElementById("header-score-badge");
+        const currentScoreEl = document.getElementById("current-score");
+
+        const questionCounterEl = document.getElementById("question-counter");
+        const progressPercentEl = document.getElementById("progress-percent");
+        const progressBarEl = document.getElementById("progress-bar");
+        const questionTextEl = document.getElementById("question-text");
+        const optionsContainer = document.getElementById("options-container");
+
+        const feedbackArea = document.getElementById("feedback-area");
+        const feedbackMessage = document.getElementById("feedback-message");
+
+        // Инициализация слушателей событий
+        startBtn.addEventListener("click", startQuiz);
+        nextBtn.addEventListener("click", handleNextQuestion);
+        restartBtn.addEventListener("click", resetQuiz);
+
+        // Запуск по нажатию Enter в поле имени
+        studentNameInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                startQuiz();
+            }
+        });
+
+        /**
+         * Начало викторины
+         */
+        function startQuiz() {
+            studentName = studentNameInput.value.trim();
+            currentQuestionIndex = 0;
+            score = 0;
+            mistakes = [];
+            
+            currentScoreEl.textContent = "0";
+            headerScoreBadge.classList.remove("hidden");
+            
+            startScreen.classList.add("hidden");
+            resultScreen.classList.add("hidden");
+            quizScreen.classList.remove("hidden");
+
+            renderQuestion();
+        }
+
+        /**
+         * Отрисовка текущего вопроса и вариантов ответа
+         */
+        function renderQuestion() {
+            isAnswered = false;
+            feedbackArea.classList.add("hidden");
+            
+            const currentData = quizData[currentQuestionIndex];
+            const totalQuestions = quizData.length;
+
+            // Обновление прогресса
+            questionCounterEl.textContent = `Вопрос ${currentQuestionIndex + 1} из ${totalQuestions}`;
+            const percent = Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100);
+            progressPercentEl.textContent = `${percent}%`;
+            progressBarEl.style.width = `${percent}%`;
+
+            // Установка текста вопроса
+            questionTextEl.textContent = `${currentQuestionIndex + 1}. ${currentData.question}`;
+
+            // Очистка и генерация кнопок вариантов
+            optionsContainer.innerHTML = "";
+            currentData.options.forEach((optionText, index) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "option-btn w-full text-left p-4 sm:p-5 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/40 transition-all duration-200 flex items-center gap-4 group cursor-pointer focus:outline-none";
+                
+                button.innerHTML = `
+                    <span class="letter-badge w-9 h-9 rounded-xl bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                        ${optionLetters[index]}
+                    </span>
+                    <span class="text-base sm:text-lg font-medium text-slate-800">${optionText}</span>
+                `;
+
+                button.addEventListener("click", () => selectOption(index, button));
+                optionsContainer.appendChild(button);
+            });
+
+            // Текст кнопки перехода на следующем шаге
+            if (currentQuestionIndex === totalQuestions - 1) {
+                nextBtn.textContent = "Завершить тест ✓";
+            } else {
+                nextBtn.textContent = "Следующий вопрос →";
+            }
+        }
+
+        /**
+         * Обработка выбора варианта ответа
+         */
+        function selectOption(selectedIndex, selectedButton) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const currentData = quizData[currentQuestionIndex];
+            const correctIndex = currentData.correct;
+            const allButtons = optionsContainer.querySelectorAll(".option-btn");
+
+            // Блокируем все кнопки после выбора
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.remove("hover:border-indigo-400", "hover:bg-indigo-50/40", "cursor-pointer");
+                btn.classList.add("cursor-default");
+            });
+
+            const isCorrect = selectedIndex === correctIndex;
+
+            if (isCorrect) {
+                score++;
+                currentScoreEl.textContent = score;
+                highlightButton(selectedButton, "correct");
+                
+                feedbackMessage.innerHTML = `
+                    <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">✓</span>
+                    <span class="text-emerald-700">Правильно! Отличная работа.</span>
+                `;
+            } else {
+                highlightButton(selectedButton, "wrong");
+                highlightButton(allButtons[correctIndex], "correct");
+
+                // Сохраняем ошибку для итогового разбора
+                mistakes.push({
+                    questionNumber: currentQuestionIndex + 1,
+                    question: currentData.question,
+                    userAnswer: `${optionLetters[selectedIndex]}) ${currentData.options[selectedIndex]}`,
+                    correctAnswer: `${optionLetters[correctIndex]}) ${currentData.options[correctIndex]}`
+                });
+
+                feedbackMessage.innerHTML = `
+                    <span class="w-7 h-7 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">✕</span>
+                    <span class="text-rose-700">Неверно. Правильный ответ: <span class="underline">${optionLetters[correctIndex]}</span></span>
+                `;
+            }
+
+            feedbackArea.classList.remove("hidden");
+        }
+
+        /**
+         * Стилизация кнопки в зависимости от правильности ответа
+         */
+        function highlightButton(button, status) {
+            const badge = button.querySelector(".letter-badge");
+            button.classList.remove("border-slate-200", "bg-white");
+            badge.classList.remove("bg-slate-100", "text-slate-700", "group-hover:bg-indigo-600");
+
+            if (status === "correct") {
+                button.classList.add("border-emerald-500", "bg-emerald-50/70");
+                badge.classList.add("bg-emerald-500", "text-white");
+            } else if (status === "wrong") {
+                button.classList.add("border-rose-500", "bg-rose-50/70");
+                badge.classList.add("bg-rose-500", "text-white");
+            }
+        }
+
+        /**
+         * Переход к следующему вопросу или показ результатов
+         */
+        function handleNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        /**
+         * Отображение итогового экрана с результатами
+         */
+        function showResults() {
+            quizScreen.classList.add("hidden");
+            headerScoreBadge.classList.add("hidden");
+            resultScreen.classList.remove("hidden");
+
+            const total = quizData.length;
+            const percentage = Math.round((score / total) * 100);
+
+            // Отображение имени ученика
+            const nameDisplay = document.getElementById("result-student-name");
+            if (studentName) {
+                nameDisplay.textContent = `Ученик: ${studentName}`;
+                nameDisplay.classList.remove("hidden");
+            } else {
+                nameDisplay.classList.add("hidden");
+            }
+
+            // Заполнение статистики
+            document.getElementById("final-score").textContent = score;
+            document.getElementById("final-percentage").textContent = `${percentage}%`;
+
+            // Расчет оценки и комментария
+            const gradeEl = document.getElementById("final-grade");
+            const commentEl = document.getElementById("result-comment");
+            const iconEl = document.getElementById("result-icon");
+
+            if (percentage >= 90) {
+                gradeEl.textContent = "5 (Отлично)";
+                gradeEl.className = "text-xl sm:text-2xl font-extrabold text-emerald-600";
+                iconEl.textContent = "🏆";
+                iconEl.className = "w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-5 text-4xl";
+                commentEl.textContent = "Превосходный результат! Ты отлично разбираешься в исчисляемых и неисчисляемых существительных.";
+            } else if (percentage >= 75) {
+                gradeEl.textContent = "4 (Хорошо)";
+                gradeEl.className = "text-xl sm:text-2xl font-extrabold text-indigo-600";
+                iconEl.textContent = "🌟";
+                iconEl.className = "w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center mx-auto mb-5 text-4xl";
+                commentEl.textContent = "Хорошая работа! У тебя крепкие знания, но стоит обратить внимание на несколько нюансов ниже.";
+            } else if (percentage >= 50) {
+                gradeEl.textContent = "3 (Удовл.)";
+                gradeEl.className = "text-xl sm:text-2xl font-extrabold text-amber-600";
+                iconEl.textContent = "📚";
+                iconEl.className = "w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-5 text-4xl";
+                commentEl.textContent = "Неплохое начало, но тему квантификаторов и исключений стоит повторить еще раз.";
+            } else {
+                gradeEl.textContent = "Нужна практика";
+                gradeEl.className = "text-xl sm:text-2xl font-extrabold text-rose-600";
+                iconEl.textContent = "💪";
+                iconEl.className = "w-20 h-20 rounded-full bg-rose-100 flex items-center justify-center mx-auto mb-5 text-4xl";
+                commentEl.textContent = "Не расстраивайся! Изучи список своих ошибок ниже и попробуй пройти тест заново.";
+            }
+
+            // Отображение блока работы над ошибками
+            const mistakesSection = document.getElementById("mistakes-section");
+            const mistakesList = document.getElementById("mistakes-list");
+            const mistakesCount = document.getElementById("mistakes-count");
+
+            if (mistakes.length > 0) {
+                mistakesSection.classList.remove("hidden");
+                mistakesCount.textContent = mistakes.length;
+                mistakesList.innerHTML = "";
+
+                mistakes.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm";
+                    card.innerHTML = `
+                        <div class="font-bold text-slate-900 mb-2">
+                            <span class="text-indigo-600">#${item.questionNumber}.</span> ${item.question}
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:justify-between gap-2 text-xs sm:text-sm">
+                            <div class="text-rose-600 bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-100">
+                                <span class="font-semibold">Твой ответ:</span> ${item.userAnswer}
+                            </div>
+                            <div class="text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
+                                <span class="font-semibold">Правильно:</span> ${item.correctAnswer}
+                            </div>
+                        </div>
+                    `;
+                    mistakesList.appendChild(card);
+                });
+            } else {
+                mistakesSection.classList.add("hidden");
+            }
+        }
+
+        /**
+         * Сброс викторины на начальный экран
+         */
+        function resetQuiz() {
+            resultScreen.classList.add("hidden");
+            startScreen.classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>
